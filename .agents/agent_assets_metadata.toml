@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "zGIwMr_-URM1GP-GNjg_6"
+uri = "file://sabaik-almasa-hostinger.zip"
+type = "unspecified"
+title = "sabaik-almasa-hostinger.zip"
