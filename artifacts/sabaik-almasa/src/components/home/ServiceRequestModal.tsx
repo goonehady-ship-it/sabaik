@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { X, ChevronRight, ChevronLeft, MapPin, Navigation, CheckCircle, Package, Truck, Factory, Leaf, Phone, User, Loader2, AlertCircle } from "lucide-react"
+import { X, ChevronRight, ChevronLeft, MapPin, Navigation, CheckCircle, Package, Truck, Factory, Leaf, Phone, User, Loader2, AlertCircle, Building2, Mail, FileText } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useServiceRequest } from "@/context/ServiceRequestContext"
@@ -155,7 +155,10 @@ interface FormData {
   containerSize: string
   location: string
   clientName: string
+  organization: string
   phone: string
+  email: string
+  notes: string
 }
 
 export function ServiceRequestModal() {
@@ -166,7 +169,10 @@ export function ServiceRequestModal() {
     containerSize: "",
     location: "",
     clientName: "",
+    organization: "",
     phone: "",
+    email: "",
+    notes: "",
   })
   const [orderId, setOrderId] = useState<number | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -180,7 +186,10 @@ export function ServiceRequestModal() {
         containerSize: preselect.containerSize || "",
         location: "",
         clientName: "",
+        organization: "",
         phone: "",
+        email: "",
+        notes: "",
       }
       setForm(newForm)
       setErrors({})
@@ -247,16 +256,23 @@ export function ServiceRequestModal() {
 
     setIsSubmitting(true)
     try {
+      const notesText = [
+        form.organization ? `الجهة: ${form.organization}` : "",
+        form.notes ? `ملاحظات: ${form.notes}` : "",
+        "طلب عبر نموذج الموقع",
+      ].filter(Boolean).join(" | ")
+
       const res = await fetch(`${API_BASE}/api/service-requests`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           clientName: form.clientName,
           phone: form.phone,
+          email: form.email || undefined,
           serviceType: form.serviceType,
           containerSize: form.containerSize || null,
           location: form.location,
-          notes: "طلب عبر نموذج الموقع",
+          notes: notesText,
         }),
       })
       const data = await res.json()
@@ -273,7 +289,7 @@ export function ServiceRequestModal() {
     closeModal()
     setTimeout(() => {
       setStep("service")
-      setForm({ serviceType: "", containerSize: "", location: "", clientName: "", phone: "" })
+      setForm({ serviceType: "", containerSize: "", location: "", clientName: "", organization: "", phone: "", email: "", notes: "" })
       setErrors({})
       setOrderId(null)
     }, 300)
@@ -426,9 +442,10 @@ export function ServiceRequestModal() {
                       <p className="flex gap-2"><span className="text-gray-400">الموقع:</span><span className="font-medium text-gray-800 truncate">{form.location}</span></p>
                     </div>
 
+                    {/* الاسم */}
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                        <User size={14} className="inline ml-1 text-primary" />الاسم الكريم *
+                        <User size={14} className="inline ml-1 text-primary" />الاسم *
                       </label>
                       <Input
                         value={form.clientName}
@@ -439,24 +456,85 @@ export function ServiceRequestModal() {
                       {errors.clientName && <p className="text-red-500 text-xs mt-1">{errors.clientName}</p>}
                     </div>
 
+                    {/* اسم الجهة */}
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                        <Phone size={14} className="inline ml-1 text-primary" />رقم الجوال *
+                        <Building2 size={14} className="inline ml-1 text-primary" />اسم الجهة التابع لها
+                        <span className="text-gray-400 font-normal text-xs mr-1">(اختياري)</span>
+                      </label>
+                      <Input
+                        value={form.organization}
+                        onChange={(e) => setForm(f => ({ ...f, organization: e.target.value }))}
+                        placeholder="مثال: شركة الإنشاءات الحديثة"
+                        className="h-12 bg-gray-50 border-gray-200"
+                      />
+                    </div>
+
+                    {/* الجوال */}
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                        <Phone size={14} className="inline ml-1 text-primary" />الجوال *
                       </label>
                       <Input
                         value={form.phone}
                         onChange={(e) => setForm(f => ({ ...f, phone: e.target.value }))}
                         placeholder="05XXXXXXXX"
                         dir="ltr"
+                        type="tel"
                         className="h-12 bg-gray-50 border-gray-200 text-left"
                       />
                       {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
                     </div>
 
+                    {/* البريد الإلكتروني */}
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                        <Mail size={14} className="inline ml-1 text-primary" />البريد الإلكتروني
+                        <span className="text-gray-400 font-normal text-xs mr-1">(اختياري)</span>
+                      </label>
+                      <Input
+                        value={form.email}
+                        onChange={(e) => setForm(f => ({ ...f, email: e.target.value }))}
+                        placeholder="example@email.com"
+                        dir="ltr"
+                        type="email"
+                        className="h-12 bg-gray-50 border-gray-200 text-left"
+                      />
+                    </div>
+
+                    {/* العنوان التفصيلي */}
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                        <MapPin size={14} className="inline ml-1 text-primary" />العنوان التفصيلي
+                        <span className="text-gray-400 font-normal text-xs mr-1">(اختياري)</span>
+                      </label>
+                      <Input
+                        value={form.location}
+                        onChange={(e) => setForm(f => ({ ...f, location: e.target.value }))}
+                        placeholder="الحي، الشارع، رقم المبنى..."
+                        className="h-12 bg-gray-50 border-gray-200"
+                      />
+                    </div>
+
+                    {/* ملاحظات */}
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                        <FileText size={14} className="inline ml-1 text-primary" />ملاحظات
+                        <span className="text-gray-400 font-normal text-xs mr-1">(اختياري)</span>
+                      </label>
+                      <textarea
+                        value={form.notes}
+                        onChange={(e) => setForm(f => ({ ...f, notes: e.target.value }))}
+                        placeholder="أي تفاصيل إضافية تودّ إضافتها..."
+                        rows={3}
+                        className="w-full px-3 py-3 text-sm rounded-xl bg-gray-50 border border-gray-200 outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 resize-none"
+                      />
+                    </div>
+
                     <Button
                       onClick={handleSubmit}
                       disabled={isSubmitting}
-                      className="w-full h-13 py-3.5 bg-secondary hover:bg-secondary/90 text-white font-bold text-base rounded-xl shadow-lg mt-2"
+                      className="w-full py-3.5 bg-secondary hover:bg-secondary/90 text-white font-bold text-base rounded-xl shadow-lg mt-2"
                     >
                       {isSubmitting ? (
                         <span className="flex items-center gap-2"><Loader2 size={18} className="animate-spin" /> جاري الإرسال...</span>
