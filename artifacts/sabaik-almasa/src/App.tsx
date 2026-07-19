@@ -9,6 +9,12 @@ import AdminDashboard from '@/pages/admin/Dashboard';
 import AdminLogin from '@/pages/admin/Login';
 import AdminRequests from '@/pages/admin/Requests';
 import AdminConversations from '@/pages/admin/Conversations';
+import AdminNotifications from '@/pages/admin/Notifications';
+import AdminSlides from '@/pages/admin/Slides';
+import AdminServices from '@/pages/admin/Services';
+import AdminContainers from '@/pages/admin/Containers';
+import AdminTestimonials from '@/pages/admin/Testimonials';
+import AdminPartners from '@/pages/admin/Partners';
 import NotFound from '@/pages/not-found';
 import { useEffect } from 'react';
 import { ServiceRequestProvider } from '@/context/ServiceRequestContext';
@@ -37,8 +43,12 @@ function Router() {
             <Route path="/admin" component={AdminDashboard} />
             <Route path="/admin/requests" component={AdminRequests} />
             <Route path="/admin/conversations" component={AdminConversations} />
-            {/* Additional admin routes would go here */}
-            <Route component={() => <div className="p-8 text-center">صفحة الإدارة قيد التطوير</div>} />
+            <Route path="/admin/notifications" component={AdminNotifications} />
+            <Route path="/admin/slides" component={AdminSlides} />
+            <Route path="/admin/services" component={AdminServices} />
+            <Route path="/admin/containers" component={AdminContainers} />
+            <Route path="/admin/testimonials" component={AdminTestimonials} />
+            <Route path="/admin/partners" component={AdminPartners} />
           </Switch>
         </AdminLayout>
       </Route>

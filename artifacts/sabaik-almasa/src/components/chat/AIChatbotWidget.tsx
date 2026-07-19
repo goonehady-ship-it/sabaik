@@ -281,8 +281,8 @@ function OrderConfirmCard({ data, onConfirm, onEdit }: {
       </div>
       <div className="p-4 space-y-2.5">
         <Row icon={<Package size={13} />} label="الخدمة" value={data.serviceType as string} />
-        {data.containerSize && <Row icon={<Package size={13} />} label="الحاوية" value={data.containerSize as string} />}
-        {data.containerPrice && (
+        {!!data.containerSize && <Row icon={<Package size={13} />} label="الحاوية" value={data.containerSize as string} />}
+        {!!data.containerPrice && (
           <Row icon={<span className="text-[11px] font-bold">﷼</span>} label="السعر" value={`${data.containerPrice} ريال/يوم`} />
         )}
         <Row icon={<MapPin size={13} />} label="الموقع" value={data.location as string} />

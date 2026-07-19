@@ -1,16 +1,16 @@
-import { pgTable, serial, text, integer, boolean, timestamp } from "drizzle-orm/pg-core";
+import { sqliteTable, integer, text } from "drizzle-orm/sqlite-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
-export const heroSlidesTable = pgTable("hero_slides", {
-  id: serial("id").primaryKey(),
+export const heroSlidesTable = sqliteTable("hero_slides", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
   title: text("title").notNull(),
   subtitle: text("subtitle").notNull(),
   imageUrl: text("image_url").notNull(),
   ctaText: text("cta_text"),
   order: integer("order").notNull().default(0),
-  isActive: boolean("is_active").notNull().default(true),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
+  createdAt: text("created_at").$defaultFn(() => new Date().toISOString()).notNull(),
 });
 
 export const insertHeroSlideSchema = createInsertSchema(heroSlidesTable).omit({ id: true, createdAt: true });

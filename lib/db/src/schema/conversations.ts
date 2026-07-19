@@ -1,9 +1,9 @@
-import { pgTable, serial, text, integer, timestamp } from "drizzle-orm/pg-core";
+import { sqliteTable, integer, text } from "drizzle-orm/sqlite-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
-export const conversationsTable = pgTable("conversations", {
-  id: serial("id").primaryKey(),
+export const conversationsTable = sqliteTable("conversations", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
   clientName: text("client_name").notNull(),
   phone: text("phone").notNull(),
   email: text("email"),
@@ -11,17 +11,17 @@ export const conversationsTable = pgTable("conversations", {
   status: text("status").notNull().default("open"),
   lastMessage: text("last_message"),
   unreadCount: integer("unread_count").notNull().default(0),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  createdAt: text("created_at").$defaultFn(() => new Date().toISOString()).notNull(),
+  updatedAt: text("updated_at").$defaultFn(() => new Date().toISOString()).notNull(),
 });
 
-export const messagesTable = pgTable("messages", {
-  id: serial("id").primaryKey(),
+export const messagesTable = sqliteTable("messages", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
   conversationId: integer("conversation_id").notNull().references(() => conversationsTable.id),
   content: text("content").notNull(),
   senderType: text("sender_type").notNull().default("client"),
   isRead: text("is_read").notNull().default("false"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  createdAt: text("created_at").$defaultFn(() => new Date().toISOString()).notNull(),
 });
 
 export const insertConversationSchema = createInsertSchema(conversationsTable).omit({ id: true, status: true, lastMessage: true, unreadCount: true, createdAt: true, updatedAt: true });

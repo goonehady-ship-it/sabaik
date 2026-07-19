@@ -1,20 +1,19 @@
 import { Router } from "express";
 import { db } from "@workspace/db";
 import { serviceRequestsTable, notificationsTable } from "@workspace/db";
-import { eq, desc, sql } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 
 const router = Router();
 
 router.get("/service-requests", async (req, res) => {
   const { status } = req.query;
-  let query = db.select().from(serviceRequestsTable).orderBy(desc(serviceRequestsTable.createdAt));
   if (status) {
     const requests = await db.select().from(serviceRequestsTable)
       .where(eq(serviceRequestsTable.status, status as string))
       .orderBy(desc(serviceRequestsTable.createdAt));
     return res.json(requests);
   }
-  const requests = await query;
+  const requests = await db.select().from(serviceRequestsTable).orderBy(desc(serviceRequestsTable.createdAt));
   return res.json(requests);
 });
 
@@ -47,7 +46,7 @@ router.patch("/service-requests/:id", async (req, res) => {
   const id = parseInt(req.params.id);
   const { status, adminNotes } = req.body;
   const [request] = await db.update(serviceRequestsTable)
-    .set({ status, adminNotes, updatedAt: sql`now()` })
+    .set({ status, adminNotes, updatedAt: new Date().toISOString() })
     .where(eq(serviceRequestsTable.id, id))
     .returning();
   if (!request) return res.status(404).json({ error: "Not found" });

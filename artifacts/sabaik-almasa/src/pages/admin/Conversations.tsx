@@ -13,11 +13,9 @@ export default function AdminConversations() {
 
   const { data: conversations, refetch: refetchConvs } = useGetConversations()
   
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: messages, refetch: refetchMsgs } = useGetMessages(selectedId as number, {
-    query: {
-      enabled: !!selectedId,
-      refetchInterval: 3000
-    }
+    query: { enabled: !!selectedId, refetchInterval: 3000 } as any,
   })
 
   const { mutate: sendMsg } = useSendMessage()
@@ -31,7 +29,7 @@ export default function AdminConversations() {
     e.preventDefault()
     if (!reply.trim() || !selectedId) return
 
-    sendMsg({ data: { content: reply, senderType: MessageInputSenderType.admin } }, {
+    sendMsg({ id: selectedId!, data: { content: reply, senderType: MessageInputSenderType.admin } }, {
       onSuccess: () => {
         setReply("")
         refetchMsgs()

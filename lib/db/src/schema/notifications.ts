@@ -1,16 +1,16 @@
-import { pgTable, serial, text, integer, boolean, timestamp } from "drizzle-orm/pg-core";
+import { sqliteTable, integer, text } from "drizzle-orm/sqlite-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
-export const notificationsTable = pgTable("notifications", {
-  id: serial("id").primaryKey(),
+export const notificationsTable = sqliteTable("notifications", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
   title: text("title").notNull(),
   message: text("message").notNull(),
   type: text("type").notNull().default("system"),
-  isRead: boolean("is_read").notNull().default(false),
+  isRead: integer("is_read", { mode: "boolean" }).notNull().default(false),
   refId: integer("ref_id"),
   refType: text("ref_type"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  createdAt: text("created_at").$defaultFn(() => new Date().toISOString()).notNull(),
 });
 
 export const insertNotificationSchema = createInsertSchema(notificationsTable).omit({ id: true, isRead: true, createdAt: true });

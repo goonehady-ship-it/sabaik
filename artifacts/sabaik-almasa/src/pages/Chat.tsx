@@ -22,11 +22,9 @@ export default function Chat() {
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const { mutate: createConv, isPending: isCreating } = useCreateConversation()
-  const { data: messages, refetch } = useGetMessages(conversationId as number, { 
-    query: { 
-      enabled: !!conversationId, 
-      refetchInterval: 5000 // Poll every 5s
-    } 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: messages, refetch } = useGetMessages(conversationId as number, {
+    query: { enabled: !!conversationId, refetchInterval: 5000 } as any,
   })
   const { mutate: sendMsg, isPending: isSending } = useSendMessage()
 
@@ -55,7 +53,7 @@ export default function Chat() {
     const text = input.trim()
     setInput("")
 
-    sendMsg({ data: { content: text, senderType: MessageInputSenderType.client } }, {
+    sendMsg({ id: conversationId!, data: { content: text, senderType: MessageInputSenderType.client } }, {
       onSuccess: () => {
         refetch()
       }

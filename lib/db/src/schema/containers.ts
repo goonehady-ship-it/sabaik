@@ -1,18 +1,18 @@
-import { pgTable, serial, text, integer, boolean, numeric, jsonb } from "drizzle-orm/pg-core";
+import { sqliteTable, integer, text, real } from "drizzle-orm/sqlite-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
-export const containersTable = pgTable("containers", {
-  id: serial("id").primaryKey(),
+export const containersTable = sqliteTable("containers", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
   name: text("name").notNull(),
   size: text("size").notNull(),
   capacity: text("capacity").notNull(),
   description: text("description").notNull(),
-  features: jsonb("features").$type<string[]>().notNull().default([]),
-  pricePerDay: numeric("price_per_day", { precision: 10, scale: 2 }).notNull(),
+  features: text("features", { mode: "json" }).$type<string[]>().notNull().default([]),
+  pricePerDay: real("price_per_day").notNull(),
   imageUrl: text("image_url").notNull(),
   order: integer("order").notNull().default(0),
-  isActive: boolean("is_active").notNull().default(true),
+  isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
 });
 
 export const insertContainerSchema = createInsertSchema(containersTable).omit({ id: true });

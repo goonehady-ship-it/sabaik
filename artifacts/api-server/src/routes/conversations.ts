@@ -31,7 +31,7 @@ router.patch("/conversations/:id", async (req, res) => {
   const id = parseInt(req.params.id);
   const { status } = req.body;
   const [conversation] = await db.update(conversationsTable)
-    .set({ status, updatedAt: sql`now()` })
+    .set({ status, updatedAt: new Date().toISOString() })
     .where(eq(conversationsTable.id, id))
     .returning();
   if (!conversation) return res.status(404).json({ error: "Not found" });
@@ -59,11 +59,11 @@ router.post("/conversations/:id/messages", async (req, res) => {
     senderType: senderType ?? "client",
   }).returning();
 
-  // Update conversation
+  // Update conversation — increment unread only for client messages
   await db.update(conversationsTable)
     .set({
       lastMessage: content,
-      updatedAt: sql`now()`,
+      updatedAt: new Date().toISOString(),
       unreadCount: senderType === "client" ? sql`unread_count + 1` : sql`unread_count`,
     })
     .where(eq(conversationsTable.id, id));

@@ -428,7 +428,7 @@ async function handleConfirm(message: string, intent: string, state: FlowState):
         clientName: name || "غير محدد",
         phone: phone || "",
         serviceType: serviceType || "غير محدد",
-        containerSize: containerSize || null,
+        containerSize: containerSize || "",
         location: location || "",
         notes: "طلب عبر البوت الذكي",
       })
@@ -552,7 +552,7 @@ router.post("/ai/chat", async (req, res) => {
       .catch(() => {});
     await db
       .update(conversationsTable)
-      .set({ lastMessage: response.reply, updatedAt: sql`now()` })
+      .set({ lastMessage: response.reply, updatedAt: new Date().toISOString() })
       .where(eq(conversationsTable.id, convId))
       .catch(() => {});
   }
