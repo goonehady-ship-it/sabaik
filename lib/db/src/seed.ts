@@ -23,13 +23,13 @@ function seedAll() {
   db.delete(servicesTable).run();
   db.delete(heroSlidesTable).run();
 
-  // --- Hero Slides ---
+  // --- Hero Slides (صور سبائك الماسة الفعلية) ---
   const now = new Date().toISOString();
   const slides = [
     {
       title: "حلول ذكية لإدارة المخلفات والأنقاض",
       subtitle: "تأجير حاويات بمختلف الأحجام لمشاريع الهدم والبناء والترميم في الرياض",
-      imageUrl: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1600&q=80",
+      imageUrl: "/images/hero-1.jpeg",
       ctaText: "اطلب خدمتك الآن",
       order: 0,
       isActive: true,
@@ -38,7 +38,7 @@ function seedAll() {
     {
       title: "نقل الأنقاض بكفاءة واحترافية",
       subtitle: "أسطول متكامل من المعدات الحديثة يخدمك على مدار الساعة في جميع أنحاء الرياض",
-      imageUrl: "https://images.unsplash.com/photo-1581579185974-c0039bd9e7f3?w=1600&q=80",
+      imageUrl: "/images/hero-2.jpeg",
       ctaText: "تواصل معنا",
       order: 1,
       isActive: true,
@@ -47,7 +47,7 @@ function seedAll() {
     {
       title: "شريككم الموثوق في تأجير الحاويات",
       subtitle: "منذ 2018 ونحن نقدم خدمات استثنائية تواكب رؤية المملكة 2030",
-      imageUrl: "https://images.unsplash.com/photo-1605745341112-85968b19335b?w=1600&q=80",
+      imageUrl: "/images/hero-3.jpeg",
       ctaText: "اعرف المزيد",
       order: 2,
       isActive: true,
@@ -56,7 +56,7 @@ function seedAll() {
     {
       title: "بيئة نظيفة ومستدامة",
       subtitle: "نساهم في تحسين المشهد الحضري وتقليل الآثار البيئية من خلال حلول متطورة",
-      imageUrl: "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=1600&q=80",
+      imageUrl: "/images/hero-4.jpeg",
       ctaText: "خدماتنا",
       order: 3,
       isActive: true,
@@ -65,13 +65,13 @@ function seedAll() {
   ];
   db.insert(heroSlidesTable).values(slides).run();
 
-  // --- Services ---
+  // --- Services (صور حاويات سبائك الماسة) ---
   const services = [
     {
       title: "تأجير حاويات مخلفات الهدم",
       description: "نوفر حاويات بمختلف الأحجام لاستيعاب مخلفات الهدم والبناء، مع ضمان الالتزام بمعايير السلامة البيئية.",
       icon: "Box",
-      imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80",
+      imageUrl: "/images/container-1.jpeg",
       order: 0,
       isActive: true,
     },
@@ -79,7 +79,7 @@ function seedAll() {
       title: "نقل الأنقاض والمخلفات",
       description: "خدمة نقل سريعة وآمنة للأنقاض ومواد الهدم إلى المواقع المخصصة، بأسطول حديث من الشاحنات.",
       icon: "Truck",
-      imageUrl: "https://images.unsplash.com/photo-1581579185974-c0039bd9e7f3?w=800&q=80",
+      imageUrl: "/images/container-2.jpeg",
       order: 1,
       isActive: true,
     },
@@ -87,7 +87,7 @@ function seedAll() {
       title: "ردم وتسوية الأراضي",
       description: "خدمات ردم المواقع وتسوية الأراضي بعد أعمال الهدم، وفق المواصفات الهندسية المطلوبة.",
       icon: "Layers",
-      imageUrl: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80",
+      imageUrl: "/images/container-3.jpeg",
       order: 2,
       isActive: true,
     },
@@ -95,7 +95,7 @@ function seedAll() {
       title: "تنظيف وتطهير المواقع",
       description: "تنظيف شامل للمواقع الإنشائية بعد انتهاء أعمال البناء أو الهدم، مع التخلص الآمن من المخلفات.",
       icon: "Sparkles",
-      imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80",
+      imageUrl: "/images/container-4.jpeg",
       order: 3,
       isActive: true,
     },
@@ -103,7 +103,7 @@ function seedAll() {
       title: "خدمات الترميم والصيانة",
       description: "ندعم مشاريع الترميم بتوفير الحاويات اللازمة ونقل المواد القديمة بكفاءة عالية.",
       icon: "Wrench",
-      imageUrl: "https://images.unsplash.com/photo-1581579185974-c0039bd9e7f3?w=800&q=80",
+      imageUrl: "/images/container-1.jpeg",
       order: 4,
       isActive: true,
     },
@@ -111,14 +111,14 @@ function seedAll() {
       title: "خدمات المصانع والشركات",
       description: "حلول لوجستية متكاملة للمصانع والشركات الكبرى لإدارة النفايات الصناعية والمخلفات بصورة منتظمة.",
       icon: "Factory",
-      imageUrl: "https://images.unsplash.com/photo-1605745341112-85968b19335b?w=800&q=80",
+      imageUrl: "/images/container-2.jpeg",
       order: 5,
       isActive: true,
     },
   ];
   db.insert(servicesTable).values(services).run();
 
-  // --- Containers ---
+  // --- Containers (صور حاويات سبائك الماسة) ---
   const containers = [
     {
       name: "حاوية صغيرة",
@@ -127,7 +127,7 @@ function seedAll() {
       description: "مثالية للمشاريع الصغيرة وأعمال ترميم المنازل، سهلة التوضع في الأماكن الضيقة.",
       features: ["مناسبة للمشاريع الصغيرة", "سهلة التوضع", "توصيل ورفع سريع", "24 ساعة خدمة"],
       pricePerDay: 150,
-      imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80",
+      imageUrl: "/images/container-1.jpeg",
       order: 0,
       isActive: true,
     },
@@ -138,7 +138,7 @@ function seedAll() {
       description: "الخيار الأمثل لأعمال البناء والترميم المتوسطة الحجم، توازن مثالي بين السعة وسهولة التوضع.",
       features: ["سعة مناسبة", "للمشاريع المتوسطة", "جدران مقواة", "سهولة التحميل"],
       pricePerDay: 200,
-      imageUrl: "https://images.unsplash.com/photo-1581579185974-c0039bd9e7f3?w=600&q=80",
+      imageUrl: "/images/container-2.jpeg",
       order: 1,
       isActive: true,
     },
@@ -149,7 +149,7 @@ function seedAll() {
       description: "مخصصة لمشاريع الهدم الكبيرة والمواقع الإنشائية الضخمة، تستوعب كميات كبيرة من الأنقاض.",
       features: ["سعة كبيرة", "لمشاريع الهدم", "هيكل متين", "تحميل آلي"],
       pricePerDay: 280,
-      imageUrl: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=80",
+      imageUrl: "/images/container-3.jpeg",
       order: 2,
       isActive: true,
     },
@@ -160,7 +160,7 @@ function seedAll() {
       description: "أكبر حاوياتنا، مثالية للمشاريع الكبرى والمصانع والمجمعات التجارية، أقصى سعة بأفضل كفاءة.",
       features: ["أقصى سعة", "للمشاريع الضخمة", "للمصانع والشركات", "خدمة دورية متاحة"],
       pricePerDay: 380,
-      imageUrl: "https://images.unsplash.com/photo-1605745341112-85968b19335b?w=600&q=80",
+      imageUrl: "/images/container-4.jpeg",
       order: 3,
       isActive: true,
     },
@@ -252,46 +252,46 @@ function seedAll() {
   ];
   db.insert(testimonialsTable).values(testimonials).run();
 
-  // --- Partners ---
+  // --- Partners (شركاء النجاح) ---
   const partners = [
     {
-      name: "الرياض مول",
-      logoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Riyadh_Gallery_Logo.svg/200px-Riyadh_Gallery_Logo.svg.png",
+      name: "شريك النجاح 1",
+      logoUrl: "/images/partner-1.jpg",
       websiteUrl: null,
       order: 0,
       isActive: true,
     },
     {
-      name: "أرامكو السعودية",
-      logoUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Saudi_Aramco.svg/200px-Saudi_Aramco.svg.png",
+      name: "شريك النجاح 2",
+      logoUrl: "/images/partner-2.jpg",
       websiteUrl: null,
       order: 1,
       isActive: true,
     },
     {
-      name: "شركة المياه الوطنية",
-      logoUrl: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=200&q=80",
+      name: "شريك النجاح 3",
+      logoUrl: "/images/partner-3.jpg",
       websiteUrl: null,
       order: 2,
       isActive: true,
     },
     {
-      name: "بن لادن للمقاولات",
-      logoUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200&q=80",
+      name: "شريك النجاح 4",
+      logoUrl: "/images/partner-4.jpg",
       websiteUrl: null,
       order: 3,
       isActive: true,
     },
     {
-      name: "الراجحي للمقاولات",
-      logoUrl: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=200&q=80",
+      name: "شريك النجاح 5",
+      logoUrl: "/images/partner-5.jpg",
       websiteUrl: null,
       order: 4,
       isActive: true,
     },
     {
-      name: "مجموعة العثيم",
-      logoUrl: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=200&q=80",
+      name: "شريك النجاح 6",
+      logoUrl: "/images/partner-6.jpg",
       websiteUrl: null,
       order: 5,
       isActive: true,
