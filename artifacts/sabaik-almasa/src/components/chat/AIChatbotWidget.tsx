@@ -602,7 +602,7 @@ export function AIChatbotWidget() {
             </div>
 
             {/* Input — location picker OR normal text input */}
-            {!isTyping && flowState.step === "location" ? (
+            {!isTyping && flowState.step === "collect_location" ? (
               <LocationPickerInChat onSend={(loc) => sendMessage(loc)} />
             ) : (
               <div className="shrink-0 border-t border-gray-200 bg-white">
