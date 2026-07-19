@@ -1,22 +1,26 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Sabaik Almasa API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
-    description: Health operations
+  - name: auth
+  - name: content
+  - name: services
+  - name: chat
+  - name: notifications
+  - name: admin
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,13 +28,1008 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  # ── Auth ─────────────────────────────────────────────────────────────────
+  /auth/login:
+    post:
+      operationId: adminLogin
+      tags: [auth]
+      summary: Admin login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginInput"
+      responses:
+        "200":
+          description: Login success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResult"
+        "401":
+          description: Invalid credentials
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current admin
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminUser"
+
+  # ── Hero Slides ───────────────────────────────────────────────────────────
+  /slides:
+    get:
+      operationId: getSlides
+      tags: [content]
+      summary: List hero slides
+      responses:
+        "200":
+          description: List of slides
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/HeroSlide"
+    post:
+      operationId: createSlide
+      tags: [content]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HeroSlideInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HeroSlide"
+
+  /slides/{id}:
+    patch:
+      operationId: updateSlide
+      tags: [content]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HeroSlideInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HeroSlide"
+    delete:
+      operationId: deleteSlide
+      tags: [content]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "204":
+          description: Deleted
+
+  # ── Services ──────────────────────────────────────────────────────────────
+  /services:
+    get:
+      operationId: getServices
+      tags: [content]
+      summary: List services
+      responses:
+        "200":
+          description: List of services
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Service"
+    post:
+      operationId: createService
+      tags: [content]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServiceInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Service"
+
+  /services/{id}:
+    patch:
+      operationId: updateService
+      tags: [content]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServiceInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Service"
+    delete:
+      operationId: deleteService
+      tags: [content]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "204":
+          description: Deleted
+
+  # ── Containers ────────────────────────────────────────────────────────────
+  /containers:
+    get:
+      operationId: getContainers
+      tags: [content]
+      summary: List container types
+      responses:
+        "200":
+          description: List of containers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Container"
+    post:
+      operationId: createContainer
+      tags: [content]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContainerInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Container"
+
+  /containers/{id}:
+    patch:
+      operationId: updateContainer
+      tags: [content]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContainerInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Container"
+    delete:
+      operationId: deleteContainer
+      tags: [content]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "204":
+          description: Deleted
+
+  # ── Values ────────────────────────────────────────────────────────────────
+  /values:
+    get:
+      operationId: getValues
+      tags: [content]
+      summary: List company values
+      responses:
+        "200":
+          description: List
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CompanyValue"
+    post:
+      operationId: createValue
+      tags: [content]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompanyValueInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompanyValue"
+
+  /values/{id}:
+    patch:
+      operationId: updateValue
+      tags: [content]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompanyValueInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompanyValue"
+    delete:
+      operationId: deleteValue
+      tags: [content]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "204":
+          description: Deleted
+
+  # ── Testimonials ──────────────────────────────────────────────────────────
+  /testimonials:
+    get:
+      operationId: getTestimonials
+      tags: [content]
+      summary: List testimonials
+      responses:
+        "200":
+          description: List
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Testimonial"
+    post:
+      operationId: createTestimonial
+      tags: [content]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TestimonialInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Testimonial"
+
+  /testimonials/{id}:
+    patch:
+      operationId: updateTestimonial
+      tags: [content]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TestimonialInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Testimonial"
+    delete:
+      operationId: deleteTestimonial
+      tags: [content]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "204":
+          description: Deleted
+
+  # ── Partners ──────────────────────────────────────────────────────────────
+  /partners:
+    get:
+      operationId: getPartners
+      tags: [content]
+      summary: List partners
+      responses:
+        "200":
+          description: List
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Partner"
+    post:
+      operationId: createPartner
+      tags: [content]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PartnerInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Partner"
+
+  /partners/{id}:
+    patch:
+      operationId: updatePartner
+      tags: [content]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PartnerInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Partner"
+    delete:
+      operationId: deletePartner
+      tags: [content]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "204":
+          description: Deleted
+
+  # ── Service Requests ──────────────────────────────────────────────────────
+  /service-requests:
+    get:
+      operationId: getServiceRequests
+      tags: [services]
+      summary: List all service requests (admin)
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, in_progress, completed, cancelled]
+      responses:
+        "200":
+          description: List
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ServiceRequest"
+    post:
+      operationId: submitServiceRequest
+      tags: [services]
+      summary: Submit a new service request (public)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServiceRequestInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceRequest"
+
+  /service-requests/{id}:
+    get:
+      operationId: getServiceRequest
+      tags: [services]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Service request detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceRequest"
+    patch:
+      operationId: updateServiceRequest
+      tags: [services]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServiceRequestUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceRequest"
+
+  # ── Dashboard Stats ───────────────────────────────────────────────────────
+  /admin/stats:
+    get:
+      operationId: getAdminStats
+      tags: [admin]
+      summary: Dashboard summary statistics
+      responses:
+        "200":
+          description: Stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardStats"
+
+  # ── Chat / Conversations ──────────────────────────────────────────────────
+  /conversations:
+    get:
+      operationId: getConversations
+      tags: [chat]
+      summary: List conversations (admin)
+      responses:
+        "200":
+          description: List
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Conversation"
+    post:
+      operationId: createConversation
+      tags: [chat]
+      summary: Start a new conversation (public)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConversationInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Conversation"
+
+  /conversations/{id}:
+    patch:
+      operationId: updateConversation
+      tags: [chat]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConversationUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Conversation"
+
+  /conversations/{id}/messages:
+    get:
+      operationId: getMessages
+      tags: [chat]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Messages list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Message"
+    post:
+      operationId: sendMessage
+      tags: [chat]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MessageInput"
+      responses:
+        "201":
+          description: Sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+
+  # ── AI Chatbot ────────────────────────────────────────────────────────────
+  /ai/chat:
+    post:
+      operationId: aiChat
+      tags: [chat]
+      summary: Send message to AI assistant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AiMessageInput"
+      responses:
+        "200":
+          description: AI response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BotReply"
+
+  # ── Notifications ─────────────────────────────────────────────────────────
+  /notifications:
+    get:
+      operationId: getNotifications
+      tags: [notifications]
+      summary: List notifications
+      responses:
+        "200":
+          description: List
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Notification"
+
+  /notifications/{id}/read:
+    patch:
+      operationId: markNotificationRead
+      tags: [notifications]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Marked read
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Notification"
+
+  /notifications/read-all:
+    patch:
+      operationId: markAllNotificationsRead
+      tags: [notifications]
+      responses:
+        "200":
+          description: All marked read
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResult"
+
 components:
   schemas:
     HealthStatus:
       type: object
       properties:
+        status: { type: string }
+      required: [status]
+
+    SuccessResult:
+      type: object
+      properties:
+        success: { type: boolean }
+      required: [success]
+
+    LoginInput:
+      type: object
+      required: [username, password]
+      properties:
+        username: { type: string }
+        password: { type: string }
+
+    AuthResult:
+      type: object
+      required: [token, user]
+      properties:
+        token: { type: string }
+        user:
+          $ref: "#/components/schemas/AdminUser"
+
+    AdminUser:
+      type: object
+      required: [id, username, name]
+      properties:
+        id: { type: integer }
+        username: { type: string }
+        name: { type: string }
+
+    HeroSlide:
+      type: object
+      required: [id, title, subtitle, imageUrl, order, isActive]
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        subtitle: { type: string }
+        imageUrl: { type: string }
+        ctaText: { type: ["string", "null"] }
+        order: { type: integer }
+        isActive: { type: boolean }
+        createdAt: { type: string }
+
+    HeroSlideInput:
+      type: object
+      required: [title, subtitle, imageUrl, order]
+      properties:
+        title: { type: string }
+        subtitle: { type: string }
+        imageUrl: { type: string }
+        ctaText: { type: ["string", "null"] }
+        order: { type: integer }
+        isActive: { type: boolean }
+
+    Service:
+      type: object
+      required: [id, title, description, icon, order, isActive]
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        description: { type: string }
+        icon: { type: string }
+        imageUrl: { type: ["string", "null"] }
+        order: { type: integer }
+        isActive: { type: boolean }
+
+    ServiceInput:
+      type: object
+      required: [title, description, icon, order]
+      properties:
+        title: { type: string }
+        description: { type: string }
+        icon: { type: string }
+        imageUrl: { type: ["string", "null"] }
+        order: { type: integer }
+        isActive: { type: boolean }
+
+    Container:
+      type: object
+      required: [id, name, size, capacity, description, features, pricePerDay, imageUrl, order, isActive]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        size: { type: string }
+        capacity: { type: string }
+        description: { type: string }
+        features:
+          type: array
+          items: { type: string }
+        pricePerDay: { type: number }
+        imageUrl: { type: string }
+        order: { type: integer }
+        isActive: { type: boolean }
+
+    ContainerInput:
+      type: object
+      required: [name, size, capacity, description, features, pricePerDay, imageUrl, order]
+      properties:
+        name: { type: string }
+        size: { type: string }
+        capacity: { type: string }
+        description: { type: string }
+        features:
+          type: array
+          items: { type: string }
+        pricePerDay: { type: number }
+        imageUrl: { type: string }
+        order: { type: integer }
+        isActive: { type: boolean }
+
+    CompanyValue:
+      type: object
+      required: [id, title, description, icon, order]
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        description: { type: string }
+        icon: { type: string }
+        order: { type: integer }
+
+    CompanyValueInput:
+      type: object
+      required: [title, description, icon, order]
+      properties:
+        title: { type: string }
+        description: { type: string }
+        icon: { type: string }
+        order: { type: integer }
+
+    Testimonial:
+      type: object
+      required: [id, clientName, company, content, rating, isActive]
+      properties:
+        id: { type: integer }
+        clientName: { type: string }
+        company: { type: string }
+        content: { type: string }
+        rating: { type: integer }
+        avatarUrl: { type: ["string", "null"] }
+        isActive: { type: boolean }
+        createdAt: { type: string }
+
+    TestimonialInput:
+      type: object
+      required: [clientName, company, content, rating]
+      properties:
+        clientName: { type: string }
+        company: { type: string }
+        content: { type: string }
+        rating: { type: integer }
+        avatarUrl: { type: ["string", "null"] }
+        isActive: { type: boolean }
+
+    Partner:
+      type: object
+      required: [id, name, logoUrl, order, isActive]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        logoUrl: { type: string }
+        websiteUrl: { type: ["string", "null"] }
+        order: { type: integer }
+        isActive: { type: boolean }
+
+    PartnerInput:
+      type: object
+      required: [name, logoUrl, order]
+      properties:
+        name: { type: string }
+        logoUrl: { type: string }
+        websiteUrl: { type: ["string", "null"] }
+        order: { type: integer }
+        isActive: { type: boolean }
+
+    ServiceRequest:
+      type: object
+      required: [id, clientName, phone, serviceType, containerSize, location, status, createdAt]
+      properties:
+        id: { type: integer }
+        clientName: { type: string }
+        phone: { type: string }
+        email: { type: ["string", "null"] }
+        serviceType: { type: string }
+        containerSize: { type: string }
+        location: { type: string }
+        duration: { type: ["string", "null"] }
+        notes: { type: ["string", "null"] }
         status:
           type: string
-      required:
-        - status
+          enum: [pending, in_progress, completed, cancelled]
+        adminNotes: { type: ["string", "null"] }
+        createdAt: { type: string }
+        updatedAt: { type: string }
 
+    ServiceRequestInput:
+      type: object
+      required: [clientName, phone, serviceType, containerSize, location]
+      properties:
+        clientName: { type: string }
+        phone: { type: string }
+        email: { type: ["string", "null"] }
+        serviceType: { type: string }
+        containerSize: { type: string }
+        location: { type: string }
+        duration: { type: ["string", "null"] }
+        notes: { type: ["string", "null"] }
+
+    ServiceRequestUpdate:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [pending, in_progress, completed, cancelled]
+        adminNotes: { type: ["string", "null"] }
+
+    DashboardStats:
+      type: object
+      required: [totalRequests, pendingRequests, inProgressRequests, completedRequests, totalConversations, openConversations, unreadNotifications, recentRequests]
+      properties:
+        totalRequests: { type: integer }
+        pendingRequests: { type: integer }
+        inProgressRequests: { type: integer }
+        completedRequests: { type: integer }
+        totalConversations: { type: integer }
+        openConversations: { type: integer }
+        unreadNotifications: { type: integer }
+        recentRequests:
+          type: array
+          items:
+            $ref: "#/components/schemas/ServiceRequest"
+
+    Conversation:
+      type: object
+      required: [id, clientName, phone, status, createdAt, updatedAt]
+      properties:
+        id: { type: integer }
+        clientName: { type: string }
+        phone: { type: string }
+        email: { type: ["string", "null"] }
+        subject: { type: ["string", "null"] }
+        status:
+          type: string
+          enum: [open, in_progress, closed]
+        lastMessage: { type: ["string", "null"] }
+        unreadCount: { type: integer }
+        createdAt: { type: string }
+        updatedAt: { type: string }
+
+    ConversationInput:
+      type: object
+      required: [clientName, phone]
+      properties:
+        clientName: { type: string }
+        phone: { type: string }
+        email: { type: ["string", "null"] }
+        subject: { type: ["string", "null"] }
+
+    ConversationUpdate:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [open, in_progress, closed]
+
+    Message:
+      type: object
+      required: [id, conversationId, content, senderType, isRead, createdAt]
+      properties:
+        id: { type: integer }
+        conversationId: { type: integer }
+        content: { type: string }
+        senderType:
+          type: string
+          enum: [client, admin, ai]
+        isRead: { type: boolean }
+        createdAt: { type: string }
+
+    MessageInput:
+      type: object
+      required: [content, senderType]
+      properties:
+        content: { type: string }
+        senderType:
+          type: string
+          enum: [client, admin, ai]
+
+    AiMessageInput:
+      type: object
+      required: [message]
+      properties:
+        message: { type: string }
+        conversationId: { type: ["integer", "null"] }
+
+    BotReply:
+      type: object
+      required: [reply]
+      properties:
+        reply: { type: string }
+        conversationId: { type: ["integer", "null"] }
+
+    Notification:
+      type: object
+      required: [id, title, message, type, isRead, createdAt]
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        message: { type: string }
+        type:
+          type: string
+          enum: [service_request, chat, system]
+        isRead: { type: boolean }
+        refId: { type: ["integer", "null"] }
+        refType: { type: ["string", "null"] }
+        createdAt: { type: string }
