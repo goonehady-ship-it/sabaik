@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { MessageSquare, X, Send, Bot, ChevronRight, CheckCircle, MapPin, Phone, User, Package, Sparkles } from "lucide-react"
+import { MessageSquare, X, Send, Bot, ChevronRight, CheckCircle, MapPin, Phone, User, Package, Sparkles, Navigation, Loader2, AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
@@ -84,18 +84,125 @@ function ServiceCardGrid({ cards, onSelect }: { cards: ServiceCard[]; onSelect: 
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.97 }}
           onClick={() => onSelect(card.id, card.title)}
-          className="group relative overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm text-right hover:border-primary/40 hover:shadow-md transition-all"
+          className="group overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm text-right hover:border-primary/40 hover:shadow-md transition-all flex flex-col"
         >
-          <div className="h-24 overflow-hidden">
+          <div className="h-20 overflow-hidden shrink-0">
             <img src={card.image} alt={card.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
           </div>
-          <div className="absolute bottom-0 inset-x-0 p-2.5">
-            <p className="text-white font-bold text-xs leading-tight">{card.emoji} {card.title}</p>
-            <p className="text-white/80 text-[10px] leading-tight mt-0.5 line-clamp-2">{card.description}</p>
+          <div className="p-2 flex-1">
+            <p className="text-gray-900 font-bold text-xs leading-tight">{card.emoji} {card.title}</p>
+            <p className="text-gray-500 text-[10px] leading-tight mt-0.5 line-clamp-2">{card.description}</p>
           </div>
         </motion.button>
       ))}
+    </div>
+  )
+}
+
+// ─── Location Picker (in-chat) ────────────────────────────────────────────────
+
+function LocationPickerInChat({ onSend }: { onSend: (location: string) => void }) {
+  const [address, setAddress] = useState("")
+  const [gpsState, setGpsState] = useState<"idle" | "loading" | "success" | "error">("idle")
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null)
+  const [showMap, setShowMap] = useState(false)
+
+  const getGPS = () => {
+    if (!navigator.geolocation) { setGpsState("error"); return }
+    setGpsState("loading")
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = +pos.coords.latitude.toFixed(6)
+        const lng = +pos.coords.longitude.toFixed(6)
+        setCoords({ lat, lng })
+        setGpsState("success")
+        setShowMap(true)
+        setAddress(`إحداثيات GPS: ${lat}, ${lng}`)
+      },
+      () => setGpsState("error"),
+      { timeout: 10000 }
+    )
+  }
+
+  const mapUrl = coords
+    ? `https://www.openstreetmap.org/export/embed.html?bbox=${coords.lng - 0.008},${coords.lat - 0.008},${coords.lng + 0.008},${coords.lat + 0.008}&layer=mapnik&marker=${coords.lat},${coords.lng}`
+    : null
+
+  const handleSend = () => {
+    if (address.trim()) onSend(address.trim())
+  }
+
+  return (
+    <div className="shrink-0 border-t border-gray-200 bg-white">
+      <div className="px-3 pt-3 space-y-2">
+        <p className="text-[11px] text-gray-500 font-medium flex items-center gap-1">
+          <MapPin size={11} className="text-primary" /> أين تحتاج إيصال الخدمة؟
+        </p>
+
+        {/* Map preview */}
+        <AnimatePresence>
+          {showMap && mapUrl && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 120 }}
+              exit={{ opacity: 0, height: 0 }}
+              className="rounded-xl overflow-hidden border border-gray-200"
+            >
+              <iframe src={mapUrl} width="100%" height="120" className="block" title="موقعك" loading="lazy" />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Text input */}
+        <div className="relative">
+          <MapPin size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSend()}
+            placeholder="مثال: الرياض - حي الملقا..."
+            className="w-full pr-8 pl-3 py-2 text-xs rounded-lg border border-gray-200 bg-gray-50 outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20"
+          />
+        </div>
+
+        {/* GPS button row */}
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={getGPS}
+            disabled={gpsState === "loading"}
+            className="flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[11px] font-medium rounded-lg border border-primary/40 text-primary hover:bg-primary hover:text-white transition-all disabled:opacity-60"
+          >
+            {gpsState === "loading"
+              ? <><Loader2 size={12} className="animate-spin" /> جاري التحديد...</>
+              : <><Navigation size={12} /> تحديد موقعي تلقائياً 📍</>
+            }
+          </button>
+          <button
+            type="button"
+            onClick={handleSend}
+            disabled={!address.trim()}
+            className="px-4 py-1.5 text-[11px] font-bold rounded-lg bg-primary text-white hover:bg-primary/90 transition-all disabled:opacity-40"
+          >
+            إرسال
+          </button>
+        </div>
+
+        {/* Status messages */}
+        {gpsState === "error" && (
+          <p className="text-[10px] text-red-500 flex items-center gap-1">
+            <AlertCircle size={10} /> تعذّر الحصول على موقعك، أدخله يدوياً
+          </p>
+        )}
+        {gpsState === "success" && (
+          <p className="text-[10px] text-green-600 flex items-center gap-1">
+            <CheckCircle size={10} /> تم تحديد موقعك ✓ اضغط إرسال
+          </p>
+        )}
+      </div>
+      <div className="pb-2 text-center mt-2">
+        <p className="text-[10px] text-gray-400">مدعوم بالذكاء الاصطناعي · سبائك الماسة</p>
+      </div>
     </div>
   )
 }
@@ -494,30 +601,34 @@ export function AIChatbotWidget() {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Input */}
-            <div className="shrink-0 border-t border-gray-200 bg-white">
-              <form onSubmit={handleSubmit} className="flex gap-2 p-3">
-                <Input
-                  ref={inputRef}
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  placeholder="اكتب رسالتك..."
-                  className="flex-1 rounded-full text-sm bg-gray-50 border-gray-200 focus-visible:ring-primary/50 h-9"
-                  disabled={isTyping}
-                />
-                <Button
-                  type="submit"
-                  size="icon"
-                  disabled={!input.trim() || isTyping}
-                  className="rounded-full shrink-0 h-9 w-9 bg-primary hover:bg-primary/90 text-white"
-                >
-                  <Send size={15} className="rtl:-scale-x-100" />
-                </Button>
-              </form>
-              <div className="pb-2 text-center">
-                <p className="text-[10px] text-gray-400">مدعوم بالذكاء الاصطناعي · سبائك الماسة</p>
+            {/* Input — location picker OR normal text input */}
+            {!isTyping && flowState.step === "location" ? (
+              <LocationPickerInChat onSend={(loc) => sendMessage(loc)} />
+            ) : (
+              <div className="shrink-0 border-t border-gray-200 bg-white">
+                <form onSubmit={handleSubmit} className="flex gap-2 p-3">
+                  <Input
+                    ref={inputRef}
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    placeholder="اكتب رسالتك..."
+                    className="flex-1 rounded-full text-sm bg-gray-50 border-gray-200 focus-visible:ring-primary/50 h-9"
+                    disabled={isTyping}
+                  />
+                  <Button
+                    type="submit"
+                    size="icon"
+                    disabled={!input.trim() || isTyping}
+                    className="rounded-full shrink-0 h-9 w-9 bg-primary hover:bg-primary/90 text-white"
+                  >
+                    <Send size={15} className="rtl:-scale-x-100" />
+                  </Button>
+                </form>
+                <div className="pb-2 text-center">
+                  <p className="text-[10px] text-gray-400">مدعوم بالذكاء الاصطناعي · سبائك الماسة</p>
+                </div>
               </div>
-            </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
