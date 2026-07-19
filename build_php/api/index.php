@@ -33,6 +33,20 @@ try {
 // ─── Init Schema & Seed ──────────────────────────────────────────────────────
 initSchema($pdo);
 
+// ─── AI Data (must be defined BEFORE router runs) ────────────────────────────
+$AI_SERVICES = [
+    ['id'=>'container_rental','title'=>'تأجير حاويات','description'=>'حاويات بأحجام مختلفة للبناء والترميم والهدم','image'=>'/images/container-1.jpeg','emoji'=>'📦'],
+    ['id'=>'debris_transport','title'=>'نقل الأنقاض والردم','description'=>'نقل احترافي إلى مواقع الردم المعتمدة بالرياض','image'=>'/images/container-2.jpeg','emoji'=>'🚛'],
+    ['id'=>'factory','title'=>'خدمات المصانع والورش','description'=>'حلول متكاملة ومتخصصة للمنشآت الصناعية','image'=>'/images/container-3.jpeg','emoji'=>'🏭'],
+    ['id'=>'environmental','title'=>'الحلول البيئية','description'=>'خدمات صديقة للبيئة تدعم رؤية المملكة 2030','image'=>'/images/container-4.jpeg','emoji'=>'🌿'],
+];
+$AI_CONTAINERS = [
+    ['id'=>'small_12','name'=>'حاوية صغيرة','size'=>'12 ياردة','capacity'=>'12 م³','price'=>150,'priceNote'=>'يومياً','image'=>'/images/container-1.jpeg','features'=>['مناسبة للمنازل','أعمال الترميم البسيط','المساحات الضيقة'],'bestFor'=>'الترميم والمنازل'],
+    ['id'=>'medium_20','name'=>'حاوية متوسطة','size'=>'20 ياردة','capacity'=>'20 م³','price'=>200,'priceNote'=>'يومياً','image'=>'/images/container-2.jpeg','features'=>['المشاريع التجارية','أعمال الهدم المتوسطة','توصيل سريع'],'bestFor'=>'المشاريع التجارية'],
+    ['id'=>'factory_30','name'=>'حاوية مصانع','size'=>'30 ياردة','capacity'=>'30 م³','price'=>280,'priceNote'=>'يومياً','image'=>'/images/container-3.jpeg','features'=>['المصانع والورش','تحمل أوزان ثقيلة','المخلفات الصناعية'],'bestFor'=>'المصانع والورش'],
+    ['id'=>'large_40','name'=>'حاوية كبيرة','size'=>'40 ياردة','capacity'=>'40 م³','price'=>350,'priceNote'=>'يومياً','image'=>'/images/container-4.jpeg','features'=>['المشاريع الكبرى','أقصى سعة تخزينية','المجمعات السكنية'],'bestFor'=>'المشاريع الكبرى'],
+];
+
 // ─── Router ──────────────────────────────────────────────────────────────────
 $method = $_SERVER['REQUEST_METHOD'];
 $uri    = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -569,19 +583,6 @@ function castMessage(array $r): array {
 // ─── AI CHAT ─────────────────────────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════════════════
 
-$AI_SERVICES = [
-    ['id'=>'container_rental','title'=>'تأجير حاويات','description'=>'حاويات بأحجام مختلفة للبناء والترميم والهدم','image'=>'/images/container-1.jpeg','emoji'=>'📦'],
-    ['id'=>'debris_transport','title'=>'نقل الأنقاض والردم','description'=>'نقل احترافي إلى مواقع الردم المعتمدة بالرياض','image'=>'/images/container-2.jpeg','emoji'=>'🚛'],
-    ['id'=>'factory','title'=>'خدمات المصانع والورش','description'=>'حلول متكاملة ومتخصصة للمنشآت الصناعية','image'=>'/images/container-3.jpeg','emoji'=>'🏭'],
-    ['id'=>'environmental','title'=>'الحلول البيئية','description'=>'خدمات صديقة للبيئة تدعم رؤية المملكة 2030','image'=>'/images/container-4.jpeg','emoji'=>'🌿'],
-];
-$AI_CONTAINERS = [
-    ['id'=>'small_12','name'=>'حاوية صغيرة','size'=>'12 ياردة','capacity'=>'12 م³','price'=>150,'priceNote'=>'يومياً','image'=>'/images/container-1.jpeg','features'=>['مناسبة للمنازل','أعمال الترميم البسيط','المساحات الضيقة'],'bestFor'=>'الترميم والمنازل'],
-    ['id'=>'medium_20','name'=>'حاوية متوسطة','size'=>'20 ياردة','capacity'=>'20 م³','price'=>200,'priceNote'=>'يومياً','image'=>'/images/container-2.jpeg','features'=>['المشاريع التجارية','أعمال الهدم المتوسطة','توصيل سريع'],'bestFor'=>'المشاريع التجارية'],
-    ['id'=>'factory_30','name'=>'حاوية مصانع','size'=>'30 ياردة','capacity'=>'30 م³','price'=>280,'priceNote'=>'يومياً','image'=>'/images/container-3.jpeg','features'=>['المصانع والورش','تحمل أوزان ثقيلة','المخلفات الصناعية'],'bestFor'=>'المصانع والورش'],
-    ['id'=>'large_40','name'=>'حاوية كبيرة','size'=>'40 ياردة','capacity'=>'40 م³','price'=>350,'priceNote'=>'يومياً','image'=>'/images/container-4.jpeg','features'=>['المشاريع الكبرى','أقصى سعة تخزينية','المجمعات السكنية'],'bestFor'=>'المشاريع الكبرى'],
-];
-
 function aiNormalize(string $text): string {
     $patterns = ['/\b(ابغى|ابي|أبغى|أبي|ودي|اريد)\b/u'=>'أريد','/\bوين\b/u'=>'أين',
                  '/\b(وش|ايش|إيش|شو)\b/u'=>'ماذا','/\b(هلا|هلو|هاي|مرحبا)\b/u'=>'مرحباً',
@@ -648,6 +649,29 @@ function aiProcess(PDO $pdo, string $msg, array $state): array {
     $t      = mb_strtolower($msg);
 
     if (in_array(trim(mb_strtolower($msg)), ['القائمة الرئيسية','menu','رئيسية','البداية'])) return aiWelcome();
+
+    // Global intents work from any step except when actively collecting data
+    $collectingSteps = ['collect_location','collect_name','collect_phone','confirm'];
+    if (!in_array($step, $collectingSteps)) {
+        if ($intent==='about') {
+            return ['reply'=>"🏢 **مؤسسة سبائك الماسة لتأجير الحاويات**\n\n📅 التأسيس: 2018 — الرياض\n📋 السجل التجاري: 7010655533\n⭐ خبرة +6 سنوات\n✅ +500 مشروع منجز\n\nمتخصصون في تأجير حاويات المخلفات ونقل الأنقاض للمشاريع السكنية والتجارية والصناعية في مدينة الرياض.",
+                    'messageType'=>'options','flowState'=>['step'=>'main_menu','data'=>new stdClass],
+                    'options'=>[['label'=>'اطلب خدمة','value'=>'order','emoji'=>'📦'],['label'=>'شوف الأسعار','value'=>'prices','emoji'=>'💰'],['label'=>'تواصل معنا','value'=>'contact','emoji'=>'📞']]];
+        }
+        if ($intent==='contact') {
+            return ['reply'=>"📞 **بياناتنا للتواصل:**\n\n☎️ 0555888767\n☎️ 0580595555\n✉️ info@sabaik.net\n📍 الرياض، المملكة العربية السعودية\n\nأو اطلب خدمتك الآن من هنا! ⬇️",
+                    'messageType'=>'options','flowState'=>['step'=>'main_menu','data'=>new stdClass],
+                    'options'=>[['label'=>'اطلب خدمة الآن','value'=>'order','emoji'=>'📦'],['label'=>'رجوع للقائمة','value'=>'menu','emoji'=>'🏠']]];
+        }
+        if ($intent==='prices') {
+            return ['reply'=>'💰 أسعارنا الشفافة والتنافسية — كل حاوية بمواصفاتها:','messageType'=>'container_cards','cards'=>$AI_CONTAINERS,
+                    'flowState'=>['step'=>'main_menu','data'=>new stdClass],'options'=>[['label'=>'اطلب الآن','value'=>'order','emoji'=>'📦'],['label'=>'رجوع للقائمة','value'=>'menu','emoji'=>'🏠']]];
+        }
+        if ($intent==='thanks') {
+            return ['reply'=>'العفو! يسعدنا خدمتك دائماً 😊 في شي آخر أقدر أساعدك فيه؟','messageType'=>'options',
+                    'flowState'=>['step'=>'main_menu','data'=>new stdClass],'options'=>[['label'=>'اطلب خدمة','value'=>'order','emoji'=>'📦'],['label'=>'لا، شكراً','value'=>'done','emoji'=>'✅']]];
+        }
+    }
 
     switch ($step) {
         case 'welcome':
