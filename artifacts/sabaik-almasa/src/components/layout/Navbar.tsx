@@ -23,7 +23,7 @@ export function Navbar() {
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <img src="/logo.png" alt="Sabaik Almasa Logo" className="h-10 md:h-12 w-auto" />
+            <img src="/logo.png" alt="Sabaik Almasa Logo" className="h-16 md:h-20 w-auto" />
           </Link>
 
           <nav className="hidden md:flex items-center gap-6 lg:gap-8">

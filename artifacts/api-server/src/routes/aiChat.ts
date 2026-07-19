@@ -480,6 +480,14 @@ async function processMessage(message: string, state: FlowState): Promise<BotRes
     return getWelcomeMessage();
   }
 
+  // Global intents work from any step (except when actively collecting data)
+  const collectingSteps = ["collect_location", "collect_name", "collect_phone", "confirm"];
+  if (!collectingSteps.includes(step)) {
+    if (intent === "about" || intent === "contact" || intent === "prices" || intent === "thanks") {
+      return handleMainMenu(message, intent, state);
+    }
+  }
+
   switch (step) {
     case "welcome":
     case "main_menu":
