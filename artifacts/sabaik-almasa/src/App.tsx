@@ -11,6 +11,8 @@ import AdminRequests from '@/pages/admin/Requests';
 import AdminConversations from '@/pages/admin/Conversations';
 import NotFound from '@/pages/not-found';
 import { useEffect } from 'react';
+import { ServiceRequestProvider } from '@/context/ServiceRequestContext';
+import { ServiceRequestModal } from '@/components/home/ServiceRequestModal';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -55,10 +57,13 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
-          <Router />
-        </WouterRouter>
-        <Toaster />
+        <ServiceRequestProvider>
+          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
+            <Router />
+          </WouterRouter>
+          <ServiceRequestModal />
+          <Toaster />
+        </ServiceRequestProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );

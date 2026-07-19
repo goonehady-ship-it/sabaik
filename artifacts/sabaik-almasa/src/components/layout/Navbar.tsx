@@ -1,13 +1,13 @@
 import * as React from "react"
 import { Link } from "wouter"
+import { useServiceRequest } from "@/context/ServiceRequestContext"
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = React.useState(false)
+  const { openModal } = useServiceRequest()
 
   React.useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20)
-    }
+    const handleScroll = () => setIsScrolled(window.scrollY > 20)
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
@@ -39,9 +39,12 @@ export function Navbar() {
           </nav>
 
           <div className="flex items-center gap-4">
-            <Link href="/#request-service" className="hidden sm:inline-flex bg-secondary text-white px-6 py-2 rounded-md font-bold text-sm hover:bg-secondary/90 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+            <button
+              onClick={() => openModal()}
+              className="hidden sm:inline-flex items-center bg-secondary text-white px-6 py-2 rounded-md font-bold text-sm hover:bg-white hover:text-primary transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+            >
               اطلب الخدمة
-            </Link>
+            </button>
           </div>
         </div>
       </div>
